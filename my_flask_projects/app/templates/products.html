@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termékek</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Főoldal</a></li>
+                <li><a href="products.html">Termékek</a></li>
+                <li><a href="cart.html">Kosár</a></li>
+                <li class="right"><a href="#" onclick="showForm('registration')">Regisztráció</a></li>
+                <li class="right"><a href="#" onclick="showForm('login')">Belépés</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1>Termékek</h1>
+        <table>
+            <tr>
+                <th>Termék</th>
+                <th>Ár</th>
+                <th>Művelet</th>
+            </tr>
+            <tr>
+                <td>Termék 1</td>
+                <td>1000 Ft</td>
+                <td><button onclick="addToCart('Termék 1', 1000)">Kosárba</button></td>
+            </tr>
+            <tr>
+                <td>Termék 2</td>
+                <td>2000 Ft</td>
+                <td><button onclick="addToCart('Termék 2', 2000)">Kosárba</button></td>
+            </tr>
+            <!-- További termékek -->
+        </table>
+    </main>
+    <script>
+        function addToCart(product, price) {
+            // Kosárba helyezés logikája
+            alert(product + " kosárba helyezve! Ár: " + price + " Ft");
+        }
+<script>
+    function addToCart(product, price) {
+        var cart = JSON.parse(localStorage.getItem('cart')) || [];
+        var existingProduct = cart.find(item => item.product === product);
+
+        if (existingProduct) {
+            existingProduct.quantity += 1;
+        } else {
+            cart.push({ product: product, price: price, quantity: 1 });
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+        alert(product + " kosárba helyezve! Ár: " + price + " Ft");
+    }
+</script>
+    </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kosár</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Főoldal</a></li>
+                <li><a href="products.html">Termékek</a></li>
+                <li><a href="cart.html">Kosár</a></li>
+                <li class="right"><a href="#" onclick="showForm('registration')">Regisztráció</a></li>
+                <li class="right"><a href="#" onclick="showForm('login')">Belépés</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1>Kosár</h1>
+        <table id="cart-table">
+            <tr>
+                <th>Termék</th>
+                <th>Ár</th>
+                <th>Mennyiség</th>
+                <th>Összeg</th>
+            </tr>
+            <!-- Kosár tartalma ide kerül -->
+        </table>
+        <p>Összesen: <span id="total-price">0 Ft</span></p>
+    </main>
+    <script>
+        function updateCart() {
+            // Kosár frissítése logika
+            var cart = JSON.parse(localStorage.getItem('cart')) || [];
+            var table = document.getElementById('cart-table');
+            var totalPrice = 0;
+
+            cart.forEach(function(item) {
+                var row = table.insertRow();
+                row.insertCell(0).innerText = item.product;
+                row.insertCell(1).innerText = item.price + " Ft";
+                row.insertCell(2).innerText = item.quantity;
+                row.insertCell(3).innerText = (item.price * item.quantity) + " Ft";
+                totalPrice += item.price * item.quantity;
+            });
+
+            document.getElementById('total-price').innerText = totalPrice + " Ft";
+        }
+
+        window.onload = updateCart;
+    </script>
+</body>
+</html>
