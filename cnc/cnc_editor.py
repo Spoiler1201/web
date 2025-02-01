@@ -29,6 +29,7 @@ class CNCEditor(QMainWindow):
         # Fájl menü
         file_menu = menu.addMenu("Fájl")
 
+
         # Megnyitás gomb
         open_action = QAction("Megnyitás", self)
         open_action.triggered.connect(self.open_file)
@@ -96,11 +97,43 @@ class CNCEditor(QMainWindow):
             background-color: #FFFFFF;
             color: #000000;
         """
+        self.recent_files = []
 
     def open_swap_dialog(self):
         """Megnyitja a Swap ablakot"""
         dialog = SwapDialog(self)
         dialog.exec_()
+
+    def open_file(self):
+        file_name, _ = QFileDialog.getOpenFileName(self, "Fájl megnyitása", "",
+                                                   "G-kód fájlok (*.nc *.gcode *.hyu);;Minden fájl (*.*)")
+        if file_name:
+            with open(file_name, "r") as file:
+                self.text_edit.setText(file.read())
+            self.setWindowTitle(f"CNC Coder by Spoiler - {file_name.split('/')[-1]}")
+
+            # 📌 Hozzáadjuk a listához
+            if file_name not in self.recent_files:
+                self.recent_files.insert(0, file_name)
+            if len(self.recent_files) > 5:
+                self.recent_files.pop()
+
+            self.update_recent_files_menu()
+
+    def update_recent_files_menu(self):
+        """Frissíti a legutóbb megnyitott fájlok listáját a menüben"""
+        self.recent_files_menu.clear()
+        for file_name in self.recent_files:
+            action = QAction(file_name, self)
+            action.triggered.connect(lambda checked, f=file_name: self.load_recent_file(f))
+            self.recent_files_menu.addAction(action)
+
+    def load_recent_file(self, file_name):
+        """Megnyit egy korábban megnyitott fájlt"""
+        with open(file_name, "r") as file:
+            self.text_edit.setText(file.read())
+        self.setWindowTitle(f"CNC Coder by Spoiler - {file_name.split('/')[-1]}")
+
 
     def toggle_theme(self):
         """Váltás éjszakai és nappali mód között"""
@@ -115,16 +148,20 @@ class CNCEditor(QMainWindow):
 
     def open_file(self):
         file_name, _ = QFileDialog.getOpenFileName(self, "Fájl megnyitása", "",
-                                                   "G-kód fájlok (*.nc *.gcode);;Minden fájl (*.*)")
+                                                   "G-kód fájlok (*.nc *.gcode *.hyu);;Minden fájl (*.*)")
         if file_name:
             with open(file_name, "r") as file:
-                self.text_edit.setText(file.read().upper())  # 💡 Automatikusan nagybetűsít
+                self.text_edit.setText(file.read())
+            self.setWindowTitle(f"CNC Coder by Spoiler - {file_name.split('/')[-1]}")  # 🔥 Cím frissítése
+
 
     def save_file(self):
-        file_name, _ = QFileDialog.getSaveFileName(
-            self, "Fájl mentése", "",
-            "G-kód fájlok (*.nc *.gcode *.hyu);;Minden fájl (*.*)"
-        )
+        file_name, _ = QFileDialog.getSaveFileName(self, "Fájl mentése", "",
+                                                   "G-kód fájlok (*.nc *.gcode *.hyu);;Minden fájl (*.*)")
+        if file_name:
+            with open(file_name, "w") as file:
+                file.write(self.text_edit.toPlainText())
+            self.setWindowTitle(f"CNC Coder by Spoiler - {file_name.split('/')[-1]}")  # 🔥 Cím frissítése)
 
         if file_name:
             lines = self.text_edit.toPlainText().upper().split("\n")  # 💡 Mentés nagybetűsen
@@ -213,6 +250,14 @@ class CNCEditor(QMainWindow):
         lang_menu.addAction(hu_action)
         lang_menu.addAction(en_action)
         lang_menu.addAction(nl_action)
+
+    def closeEvent(self, event):
+        reply = QMessageBox.question(self, "Kilépés", "Biztosan kilépsz mentés nélkül?",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
 
 class SwapDialog(QDialog):
     def __init__(self, parent=None):
