@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Termékek</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <header>
         <nav>
             <ul>
-                <li><a href="index.html">Főoldal</a></li>
-                <li><a href="products.html">Termékek</a></li>
-                <li><a href="cart.html">Kosár</a></li>
+                <li><a href="{{ url_for('home') }}">Főoldal</a></li>
+                <li><a href="{{ url_for('products') }}">Termékek</a></li>
+                <li><a href="{{ url_for('cart') }}">Kosár</a></li>
                 <li class="right"><a href="#" onclick="showForm('registration')">Regisztráció</a></li>
                 <li class="right"><a href="#" onclick="showForm('login')">Belépés</a></li>
             </ul>
@@ -41,24 +41,18 @@
     </main>
     <script>
         function addToCart(product, price) {
-            // Kosárba helyezés logikája
+            var cart = JSON.parse(localStorage.getItem('cart')) || [];
+            var existingProduct = cart.find(item => item.product === product);
+
+            if (existingProduct) {
+                existingProduct.quantity += 1;
+            } else {
+                cart.push({ product: product, price: price, quantity: 1 });
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
             alert(product + " kosárba helyezve! Ár: " + price + " Ft");
         }
-<script>
-    function addToCart(product, price) {
-        var cart = JSON.parse(localStorage.getItem('cart')) || [];
-        var existingProduct = cart.find(item => item.product === product);
-
-        if (existingProduct) {
-            existingProduct.quantity += 1;
-        } else {
-            cart.push({ product: product, price: price, quantity: 1 });
-        }
-
-        localStorage.setItem('cart', JSON.stringify(cart));
-        alert(product + " kosárba helyezve! Ár: " + price + " Ft");
-    }
-</script>
     </script>
 </body>
 </html>

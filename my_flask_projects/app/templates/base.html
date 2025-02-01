@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('home') }}">Főoldal</a></li>
+                <li><a href="{{ url_for('products') }}">Termékek</a></li>
+                <li><a href="{{ url_for('cart') }}">Kosár</a></li>
+                <li class="right"><a href="#" onclick="showForm('registration')">Regisztráció</a></li>
+                <li class="right"><a href="#" onclick="showForm('login')">Belépés</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2024 My Flask Webshop. Minden jog fenntartva.</p>
+    </footer>
+    <script>
+        function showForm(formType) {
+            var formContainer = document.getElementById('form-container');
+            var registrationForm = document.getElementById('registration-form');
+            var loginForm = document.getElementById('login-form');
+            formContainer.style.display = 'block';
+            if (formType === 'registration') {
+                registrationForm.style.display = 'block';
+                loginForm.style.display = 'none';
+            } else {
+                registrationForm.style.display = 'none';
+                loginForm.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

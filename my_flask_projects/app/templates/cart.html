@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kosár</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <header>
         <nav>
             <ul>
-                <li><a href="index.html">Főoldal</a></li>
-                <li><a href="products.html">Termékek</a></li>
-                <li><a href="cart.html">Kosár</a></li>
+                <li><a href="{{ url_for('home') }}">Főoldal</a></li>
+                <li><a href="{{ url_for('products') }}">Termékek</a></li>
+                <li><a href="{{ url_for('cart') }}">Kosár</a></li>
                 <li class="right"><a href="#" onclick="showForm('registration')">Regisztráció</a></li>
                 <li class="right"><a href="#" onclick="showForm('login')">Belépés</a></li>
             </ul>
@@ -33,7 +33,6 @@
     </main>
     <script>
         function updateCart() {
-            // Kosár frissítése logika
             var cart = JSON.parse(localStorage.getItem('cart')) || [];
             var table = document.getElementById('cart-table');
             var totalPrice = 0;
@@ -51,6 +50,3 @@
         }
 
         window.onload = updateCart;
-    </script>
-</body>
-</html>
