@@ -1,17 +1,13 @@
+from PyQt5.QtGui import QSyntaxHighlighter, QTextCharFormat, QColor, QFont
+import re
+
 class CNCHighlighter(QSyntaxHighlighter):
-    def __init__(self, document, dark_mode=False):  # 🔥 dark_mode most már egy opcionális paraméter
-        super().__init__(document)
-        self.dark_mode = dark_mode  # 🔥 Elmentjük a dark mode állapotát
-
-        # Színek beállítása a témától függően
-        self.number_color = QColor("#FFFFFF") if self.dark_mode else QColor("#000000")
-
-        self.rules = []  # Szabályok listája
-        self.add_rule(r'\b[XYZIJKRFS]-?\d*\.?\d+\b', self.number_color)  # Koordináták színe
+    def __init__(self, parent):
+        super().__init__(parent)
 
         # Szabályos G-kódok és M-kódok
         self.valid_gcodes = {"G00", "G01", "G02", "G03", "G90", "G91"}
-        self.valid_mcodes = {"M03", "M05", "M30"}
+        self.valid_mcodes = {"M01","M02","M03", "M05", "M30","M50","M47","M51","M00","M08","M09","M19"}
 
         # Színek beállítása
         self.gcode_format = QTextCharFormat()
@@ -23,7 +19,7 @@ class CNCHighlighter(QSyntaxHighlighter):
         self.mcode_format.setFontWeight(QFont.Bold)
 
         self.coord_format = QTextCharFormat()
-        self.coord_format.setForeground(QColor("#FFFFFF") if self.dark_mode else QColor("#000000")
+        self.coord_format.setForeground(QColor("green"))
 
         self.comment_format = QTextCharFormat()
         self.comment_format.setForeground(QColor("gray"))

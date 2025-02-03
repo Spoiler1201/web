@@ -6,11 +6,6 @@ class CNCEditor(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        # Legyen dark_mode beállítva a highlighter előtt
-        self.dark_mode = True
-
-        self.recent_files = []  # Legutóbbi fájlok listája
-
         # Fő widget és layout
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -21,8 +16,8 @@ class CNCEditor(QMainWindow):
         self.text_edit.setFont(QFont("Courier", 12, QFont.Bold))  # Monospace betűtípus
         layout.addWidget(self.text_edit)
 
-        # Highlighter példányosítása a dark_mode paraméterrel
-        self.highlighter = CNCHighlighter(self.text_edit.document(), dark_mode=self.dark_mode)
+        # Szintaxiskiemelő bekapcsolása
+        self.highlighter = CNCHighlighter(self.text_edit.document())
 
         # 🔥 Háttérszín és szöveg szín beállítása
         self.setStyleSheet("background-color: #2E2E2E; color: #E0E0E0;")
@@ -33,8 +28,7 @@ class CNCEditor(QMainWindow):
 
         # Fájl menü
         file_menu = menu.addMenu("Fájl")
-        self.recent_files_menu = file_menu.addMenu("Legutóbbi fájlok")
-        self.update_recent_files_menu()  # Frissítjük a listát az elején
+
 
         # Megnyitás gomb
         open_action = QAction("Megnyitás", self)
@@ -48,7 +42,6 @@ class CNCEditor(QMainWindow):
 
         # Szerkesztés menü
         edit_menu = menu.addMenu("Szerkesztés")
-
 
         self.line_numbering_enabled = False  # Alapértelmezésben kikapcsolva
 
@@ -74,16 +67,15 @@ class CNCEditor(QMainWindow):
             "nl": {"file": "Bestand", "edit": "Bewerken", "open": "Openen", "save": "Opslaan", "swap": "Wisselen",
                    "numbering": "Regelnummering aan/uit"},
             "tr": {"file": "Dosya", "edit": "Düzenle", "open": "Aç", "save": "Kaydet", "swap": "Değiştir",
-                   "numbering": "Satır numaralandırma aç/kapat"},
+                   "numbering": "Satır Numaralarını Aç/Kapat"},
         }
-
-        self.current_language = "en"
+        self.current_language = "hu"
 
         lang_menu = menu.addMenu("Languages")
         hu_action = QAction("Magyar", self)
         en_action = QAction("English", self)
         nl_action = QAction("Nederlands", self)
-        tr_action = QAction("Türkçe", self)
+        tr_action = QAction("Turkce", self)
 
         hu_action.triggered.connect(lambda: self.set_language("hu"))
         en_action.triggered.connect(lambda: self.set_language("en"))
@@ -97,8 +89,7 @@ class CNCEditor(QMainWindow):
 
         # Ablak beállítások
         self.setWindowTitle("Cnc Coder by Spoiler")
-        self.resize(1200, 800)
-
+        self.resize(800, 600)
 
         self.dark_mode = True  # Alapértelmezésben sötét mód
 
@@ -111,7 +102,7 @@ class CNCEditor(QMainWindow):
             background-color: #FFFFFF;
             color: #000000;
         """
-
+        self.recent_files = []
 
     def open_swap_dialog(self):
         """Megnyitja a Swap ablakot"""
@@ -148,11 +139,11 @@ class CNCEditor(QMainWindow):
             self.text_edit.setText(file.read())
         self.setWindowTitle(f"CNC Coder by Spoiler - {file_name.split('/')[-1]}")
 
+
     def toggle_theme(self):
+        """Váltás éjszakai és nappali mód között"""
         self.dark_mode = not self.dark_mode
-        self.highlighter.dark_mode = self.dark_mode
-        self.highlighter.coord_format.setForeground(QColor("#FFFFFF") if self.dark_mode else QColor("#000000"))
-        self.highlighter.rehighlight()
+
         if self.dark_mode:
             self.setStyleSheet(self.dark_theme)
             self.text_edit.setStyleSheet(self.dark_theme + "border: none;")
@@ -256,17 +247,14 @@ class CNCEditor(QMainWindow):
         hu_action = QAction("Magyar", self)
         en_action = QAction("English", self)
         nl_action = QAction("Nederlands", self)
-        tr_action = QAction("Türkçe", self)
 
         hu_action.triggered.connect(lambda: self.set_language("hu"))
         en_action.triggered.connect(lambda: self.set_language("en"))
         nl_action.triggered.connect(lambda: self.set_language("nl"))
-        tr_action.triggered.connect(lambda: self.set_language("tr"))
 
         lang_menu.addAction(hu_action)
         lang_menu.addAction(en_action)
         lang_menu.addAction(nl_action)
-        lang_menu.addAction(tr_action)
 
     def closeEvent(self, event):
         reply = QMessageBox.question(self, "Kilépés", "Biztosan kilépsz mentés nélkül?",
@@ -328,7 +316,7 @@ class CNCHighlighter(QSyntaxHighlighter):
         self.add_rule(r'\bG\d*\b', QColor("#4DA6FF"))  # G-kód és közvetlen utána lévő számok: világoskék
         self.add_rule(r'\bM\d*\b', QColor("#FF6666"))  # M-kód és közvetlen utána lévő számok: világos piros
         self.add_rule(r'\bO\d+\b', QColor("#80FF80"))  # O-kód (program kezdet): világoszöld
-        self.add_rule(r'\b[XYZIJKRFS]-?\d*\.?\d+\b', QColor("#FFFFFF" if parent().dark_mode else "#000000"))
+        self.add_rule(r'\b[XYZIJKRFS]-?\d*\.?\d+\b', QColor("#FFFFFF"))  # Koordináták sárgán (negatív is)
 
     def add_rule(self, pattern, color):
         """Szabály hozzáadása a szintaxiskiemeléshez"""
